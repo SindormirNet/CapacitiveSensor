@@ -339,6 +339,8 @@ class CapacitiveSensor
   // library-accessible "private" interface
   private:
   // variables
+  	int _sendPin;
+	int _receivePin;
 	int error;
 	unsigned long  leastTotal;
 	unsigned int   loopTimingFactor;

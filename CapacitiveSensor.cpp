@@ -41,6 +41,10 @@
 
 CapacitiveSensor::CapacitiveSensor(uint8_t sendPin, uint8_t receivePin)
 {
+	//save pin numbers
+	_sendPin = sendPin;
+	_receivePin = receivePin;
+
 	// initialize this instance's variables
 	// Serial.begin(9600);		// for debugging
 	error = 1;
@@ -63,6 +67,7 @@ CapacitiveSensor::CapacitiveSensor(uint8_t sendPin, uint8_t receivePin)
 	pinMode(receivePin, INPUT);						// receivePin to INPUT
 	digitalWrite(sendPin, LOW);
 
+	//TODO SYV: Quitar esto si no se va a usar
 	sBit = PIN_TO_BITMASK(sendPin);					// get send pin's ports and bitmask
 	sReg = PIN_TO_BASEREG(sendPin);					// get pointer to output register
 
@@ -154,13 +159,19 @@ void CapacitiveSensor::set_CS_Timeout_Millis(unsigned long timeout_millis){
 int CapacitiveSensor::SenseOneCycle(void)
 {
     noInterrupts();
-	DIRECT_WRITE_LOW(sReg, sBit);	// sendPin Register low
-	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to input (pullups are off)
-	DIRECT_MODE_OUTPUT(rReg, rBit); // receivePin to OUTPUT
-	DIRECT_WRITE_LOW(rReg, rBit);	// pin is now LOW AND OUTPUT
+//	DIRECT_WRITE_LOW(sReg, sBit);	// sendPin Register low
+	digitalWrite(_sendPin,LOW);
+//	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to input (pullups are off)
+	digitalWrite(_receivePin, INPUT);
+//	DIRECT_MODE_OUTPUT(rReg, rBit); // receivePin to OUTPUT
+	pinMode(_receivePin, OUTPUT);
+//	DIRECT_WRITE_LOW(rReg, rBit);	// pin is now LOW AND OUTPUT
+	digitalWrite(_receivePin, LOW);
 	delayMicroseconds(10);
-	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to input (pullups are off)
-	DIRECT_WRITE_HIGH(sReg, sBit);	// sendPin High
+//	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to input (pullups are off)
+	pinMode(_receivePin, INPUT);
+//	DIRECT_WRITE_HIGH(sReg, sBit);	// sendPin High
+	digitalWrite(_sendPin, HIGH);
     interrupts();
 
 	while ( !DIRECT_READ(rReg, rBit) && (total < CS_Timeout_Millis) ) {  // while receive pin is LOW AND total is positive value
@@ -175,6 +186,7 @@ int CapacitiveSensor::SenseOneCycle(void)
 
 	// set receive pin HIGH briefly to charge up fully - because the while loop above will exit when pin is ~ 2.5V
     noInterrupts();
+    	//TODO SYVIC: Cambiar estos registros también a funciones estándar de Arduino
 	DIRECT_WRITE_HIGH(rReg, rBit);
 	DIRECT_MODE_OUTPUT(rReg, rBit);  // receivePin to OUTPUT - pin is now HIGH AND OUTPUT
 	DIRECT_WRITE_HIGH(rReg, rBit);
@@ -182,7 +194,9 @@ int CapacitiveSensor::SenseOneCycle(void)
 	DIRECT_WRITE_LOW(sReg, sBit);	// sendPin LOW
     interrupts();
 
+    //TODO: Comprobar si hace falta habilitar esto en la 101
 #ifdef FIVE_VOLT_TOLERANCE_WORKAROUND
+    	//TODO SYVIC: Cambiar estos registros a funciones de Arduino
 	DIRECT_MODE_OUTPUT(rReg, rBit);
 	DIRECT_WRITE_LOW(rReg, rBit);
 	delayMicroseconds(10);
