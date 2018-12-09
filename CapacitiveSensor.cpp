@@ -186,21 +186,26 @@ int CapacitiveSensor::SenseOneCycle(void)
 
 	// set receive pin HIGH briefly to charge up fully - because the while loop above will exit when pin is ~ 2.5V
     noInterrupts();
-    	//TODO SYVIC: Cambiar estos registros también a funciones estándar de Arduino
-	DIRECT_WRITE_HIGH(rReg, rBit);
-	DIRECT_MODE_OUTPUT(rReg, rBit);  // receivePin to OUTPUT - pin is now HIGH AND OUTPUT
-	DIRECT_WRITE_HIGH(rReg, rBit);
-	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to INPUT (pullup is off)
-	DIRECT_WRITE_LOW(sReg, sBit);	// sendPin LOW
+//	DIRECT_WRITE_HIGH(rReg, rBit);
+	digitalWrite(_receivePin,HIGH);
+//	DIRECT_MODE_OUTPUT(rReg, rBit);  // receivePin to OUTPUT - pin is now HIGH AND OUTPUT
+	pinMode(_receivePin, OUTPUT);
+//	DIRECT_WRITE_HIGH(rReg, rBit);
+	digitalWrite(_receivePin, HIGH);
+//	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to INPUT (pullup is off)
+	pinMode(_receivePin, INPUT);
+//	DIRECT_WRITE_LOW(sReg, sBit);	// sendPin LOW
+	digitalWrite(_sendPin, LOW);
     interrupts();
 
-    //TODO: Comprobar si hace falta habilitar esto en la 101
 #ifdef FIVE_VOLT_TOLERANCE_WORKAROUND
-    	//TODO SYVIC: Cambiar estos registros a funciones de Arduino
-	DIRECT_MODE_OUTPUT(rReg, rBit);
-	DIRECT_WRITE_LOW(rReg, rBit);
+//	DIRECT_MODE_OUTPUT(rReg, rBit);
+	pinMode(_receivePin, OUTPUT);
+//	DIRECT_WRITE_LOW(rReg, rBit);
+	digitalWrite(_receivePin, LOW);
 	delayMicroseconds(10);
-	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to INPUT (pullup is off)
+//	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to INPUT (pullup is off)
+	pinMode(_receivePin, INPUT);
 #else
 	while ( DIRECT_READ(rReg, rBit) && (total < CS_Timeout_Millis) ) {  // while receive pin is HIGH  AND total is less than timeout
 		total++;
