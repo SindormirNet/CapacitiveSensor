@@ -2,6 +2,8 @@
 
 CapacitiveSensor lets you create sensors that can detect touch or proximity. 
 
+This version is modified in order to work in modern Arduino 101 firmwares
+
 http://www.pjrc.com/teensy/td_libs_CapacitiveSensor.html
 
 http://playground.arduino.cc/Main/CapacitiveSensor
