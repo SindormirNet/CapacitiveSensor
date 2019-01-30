@@ -162,7 +162,7 @@ int CapacitiveSensor::SenseOneCycle(void)
 //	DIRECT_WRITE_LOW(sReg, sBit);	// sendPin Register low
 	digitalWrite(_sendPin,LOW);
 //	DIRECT_MODE_INPUT(rReg, rBit);	// receivePin to input (pullups are off)
-	digitalWrite(_receivePin, INPUT);
+	pinMode(_receivePin, INPUT);	// Is this instruction relevant? (The mode is changed again in the next statement)
 //	DIRECT_MODE_OUTPUT(rReg, rBit); // receivePin to OUTPUT
 	pinMode(_receivePin, OUTPUT);
 //	DIRECT_WRITE_LOW(rReg, rBit);	// pin is now LOW AND OUTPUT
